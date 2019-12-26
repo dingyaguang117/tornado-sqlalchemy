@@ -1,4 +1,3 @@
-import logging
 import multiprocessing
 from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
@@ -178,12 +177,13 @@ class SQLAlchemy(object):
 
     def __init__(self, app=None, sesion_options=None, engine_options=None):
 
-        self.Session = sessionmaker(class_=SessionEx, db=self, **(sesion_options or {}))
         self.Model = self.make_declarative_base()
 
         self._engine_options = engine_options or {}
         self._engine_lock = Lock()
         self._engines = {}
+
+        self._sesion_options = sesion_options or {}
 
         if app is not None:
             self.init_app(app)
@@ -191,9 +191,6 @@ class SQLAlchemy(object):
             self.app = None
 
     def init_app(self, app):
-        if self.app:
-            logging.warning('init_app called more than once, sqlalchemy_engine_options may not take effect')
-
         self.app = app
         self.app.db = self
 
@@ -207,6 +204,8 @@ class SQLAlchemy(object):
         engine_options = engine_options.copy()
         engine_options.update(self._engine_options)
         self._engine_options = engine_options
+
+        self.Session = sessionmaker(class_=SessionEx, db=self, **self._sesion_options)
 
     def get_app(self):
         if not self.app:

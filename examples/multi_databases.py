@@ -1,17 +1,19 @@
 from sqlalchemy import BigInteger, Column, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
 from tornado_sqlalchemy import (
     SessionMixin,
     as_future,
+    set_max_workers,
     SQLAlchemy
 )
 
 
 db = SQLAlchemy()
+
+set_max_workers(10)
 
 
 class User(db.Model):
@@ -31,6 +33,8 @@ class Foo(db.Model):
 
 
 class SynchronousRequestHandler(SessionMixin, RequestHandler):
+
+
     def get(self):
         with self.make_session() as session:
             count = session.query(User).count()
@@ -44,6 +48,8 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
     @coroutine
     def get(self):
         with self.make_session() as session:
+            print(session)
+            session.add(User(username='b'))
             count = yield as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -52,6 +58,8 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
 class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
     async def get(self):
         with self.make_session() as session:
+            print(session)
+            session.add(User(username='c'))
             count = await as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -69,21 +77,23 @@ if __name__ == '__main__':
         sqlalchemy_binds={
             'foo': 'mysql://t_sa:t_sa@localhost/t_sa_1',
             'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
-        }
+        },
+        sqlalchemy_engine_options={
+            'pool_size': 1,
+            'pool_timeout': 10,
+            'max_overflow': 0
+        },
+        autoreload=True
     )
     db.init_app(app)
 
     db.create_all()
 
     session = db.Session()
-    print(session)
 
     session.add(User(username='a'))
     session.commit()
-
-
-    # db.Model.metadata.create_all(db.get_engine())
-    # db.Model.metadata.create_all(db.get_engine('foo'))
+    session.close()
 
     print('Listening on port 8888')
 
