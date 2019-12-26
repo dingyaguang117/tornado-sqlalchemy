@@ -58,7 +58,7 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
 
         self._application = Application(
             handlers,
-            SQLALCHEMY_DATABASE_URI=mysql_url
+            sqlalchemy_database_uri=mysql_url
         )
 
         db.init_app(self._application)

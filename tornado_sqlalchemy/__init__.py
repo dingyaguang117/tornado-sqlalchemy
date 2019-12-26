@@ -192,18 +192,18 @@ class SQLAlchemy(object):
 
     def init_app(self, app):
         if self.app:
-            logging.warning('init_app called more than once, SQLALCHEMY_ENGINE_OPTIONS may not take effect')
+            logging.warning('init_app called more than once, sqlalchemy_engine_options may not take effect')
 
         self.app = app
         self.app.db = self
 
-        bind = app.settings.get('SQLALCHEMY_DATABASE_URI')
-        binds = app.settings.get('SQLALCHEMY_BINDS')
+        bind = app.settings.get('sqlalchemy_database_uri')
+        binds = app.settings.get('sqlalchemy_binds')
 
         if not bind and not binds:
             raise MissingDatabaseSettingError()
 
-        engine_options = app.settings.get('SQLALCHEMY_ENGINE_OPTIONS') or {}
+        engine_options = app.settings.get('sqlalchemy_engine_options') or {}
         engine_options = engine_options.copy()
         engine_options.update(self._engine_options)
         self._engine_options = engine_options
@@ -225,9 +225,9 @@ class SQLAlchemy(object):
         app = self.get_app()
 
         if bind is None:
-            uri = app.settings['SQLALCHEMY_DATABASE_URI']
+            uri = app.settings['sqlalchemy_database_uri']
         else:
-            binds = app.settings.get('SQLALCHEMY_BINDS') or ()
+            binds = app.settings.get('sqlalchemy_binds') or ()
             if bind not in binds:
                 raise RuntimeError('bind {} undefined.'.format(bind))
             uri = binds[bind]
@@ -260,7 +260,7 @@ class SQLAlchemy(object):
         This is suitable for use of sessionmaker(binds=db.get_binds()).
         """
         app = self.get_app()
-        binds = [None] + list(app.settings.get('SQLALCHEMY_BINDS') or ())
+        binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
         retval = {}
         for bind in binds:
             engine = self.get_engine(bind)
@@ -272,7 +272,7 @@ class SQLAlchemy(object):
         app = self.get_app()
 
         if bind == '__all__':
-            binds = [None] + list(app.settings.get('SQLALCHEMY_BINDS') or ())
+            binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
         elif isinstance(bind, str) or bind is None:
             binds = [bind]
         else:

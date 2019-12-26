@@ -21,8 +21,8 @@ class MultiDatabasesTestCase(TestCase):
 
         self._application = mock.Mock()
         self._application.settings = {
-            'SQLALCHEMY_DATABASE_URI': mysql_url,
-            'SQLALCHEMY_BINDS': {
+            'sqlalchemy_database_uri': mysql_url,
+            'sqlalchemy_binds': {
                 'foo': mysql_url_1,
                 'bar': mysql_url_2,
             }

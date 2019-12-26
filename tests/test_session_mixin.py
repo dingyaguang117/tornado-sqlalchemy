@@ -10,7 +10,7 @@ class SessionMixinTestCase(BaseTestCase):
         class GoodHandler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()
-                h_self.application.settings = {'SQLALCHEMY_DATABASE_URI': self.db_uri}
+                h_self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
                 db.init_app(h_self.application)
 
             def run(h_self):
@@ -38,7 +38,7 @@ class SessionMixinTestCase(BaseTestCase):
         class Handler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()
-                h_self.application.settings = {'SQLALCHEMY_DATABASE_URI': self.db_uri}
+                h_self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
                 db.init_app(h_self.application)
 
             def run(h_self):

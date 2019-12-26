@@ -31,7 +31,7 @@ class BaseTestCase(TestCase):
     def setUp(self):
         self.db_uri = mysql_url
         self.application = mock.Mock()
-        self.application.settings = {'SQLALCHEMY_DATABASE_URI': self.db_uri}
+        self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
 
         db.init_app(self.application)
         db.Model.metadata.create_all(db.get_engine())

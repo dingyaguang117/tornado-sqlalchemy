@@ -65,8 +65,8 @@ if __name__ == '__main__':
             (r'/gen-coroutines', GenCoroutinesRequestHandler),
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
-        SQLALCHEMY_DATABASE_URI='mysql://t_sa:t_sa@localhost/t_sa',
-        SQLALCHEMY_BINDS={
+        sqlalchemy_database_uri='mysql://t_sa:t_sa@localhost/t_sa',
+        sqlalchemy_binds={
             'foo': 'mysql://t_sa:t_sa@localhost/t_sa_1',
             'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
         }

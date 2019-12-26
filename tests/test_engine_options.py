@@ -11,8 +11,8 @@ class EngineOptionTestCase(TestCase):
     def setUp(self) -> None:
         self.application = mock.Mock()
         self.application.settings = {
-            'SQLALCHEMY_DATABASE_URI': mysql_url,
-            'SQLALCHEMY_ENGINE_OPTIONS': {
+            'sqlalchemy_database_uri': mysql_url,
+            'sqlalchemy_engine_options': {
                 'echo': True,
                 'pool_size': 1,
                 'pool_timeout': 1
