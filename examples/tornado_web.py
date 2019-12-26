@@ -7,18 +7,17 @@ from tornado.web import Application, RequestHandler
 from tornado_sqlalchemy import (
     SessionMixin,
     as_future,
-    declarative_base,
-    make_session_factory,
+    SQLAlchemy,
 )
 
 
-DeclarativeBase = declarative_base()
+db = SQLAlchemy()
 
 
 define('database-url', type=str, help='Database URL')
 
 
-class User(DeclarativeBase):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = Column(BigInteger, primary_key=True)
@@ -57,17 +56,18 @@ if __name__ == '__main__':
 
     assert options.database_url, "Need a database URL"
 
-    session_factory = make_session_factory(options.database_url)
-
-    Application(
+    app = Application(
         [
             (r'/sync', SynchronousRequestHandler),
             (r'/gen-coroutines', GenCoroutinesRequestHandler),
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
-        session_factory=session_factory,
-    ).listen(8888)
+        sqlalchemy_database_uri=options.database_url,
+    )
 
+    db.init_app(app)
+
+    app.listen(8888)
     print('Listening on port 8888')
 
     IOLoop.current().start()
