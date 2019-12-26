@@ -31,9 +31,7 @@ class Foo(db.Model):
     foo = Column(String(255))
 
 
-
 class SynchronousRequestHandler(SessionMixin, RequestHandler):
-
 
     def get(self):
         with self.make_session() as session:
@@ -48,8 +46,8 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
     @coroutine
     def get(self):
         with self.make_session() as session:
-            print(session)
             session.add(User(username='b'))
+            session.add(Foo(foo='foo'))
             count = yield as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -60,6 +58,7 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
         with self.make_session() as session:
             print(session)
             session.add(User(username='c'))
+            session.add(Foo(foo='d'))
             count = await as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -79,9 +78,9 @@ if __name__ == '__main__':
             'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
         },
         sqlalchemy_engine_options={
-            'pool_size': 1,
+            'pool_size': 2,
             'pool_timeout': 10,
-            'max_overflow': 0
+            'max_overflow': 10
         },
         autoreload=True
     )
